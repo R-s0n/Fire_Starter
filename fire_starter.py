@@ -437,4 +437,4 @@ print("[-] Updating database...")
 # Send new fqdn object
 r = requests.post(f'http://{server_ip}:{server_port}/api/auto/update', json=thisFqdn, headers={'Content-type':'application/json'})
 
-print(f"[+] Fire_Starter completed successfully")
+print(f"[+] Fire_Starter completed successfully!")
