@@ -23,5 +23,5 @@ applicable version of this script as I get closer to releasing my WAPT Framework
 
 ## To Do
 1. Pipe all stderr msgs to static log file
-2. Add modules for building/scanning with custom wordlists
-3. Add EyeWitness module
+2. ~~Add modules for building/scanning with custom wordlists~~
+
