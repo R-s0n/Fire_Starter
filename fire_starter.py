@@ -1,5 +1,7 @@
-import requests, sys, subprocess, getopt, json
+import requests, sys, subprocess, getopt, json, time, math
 from datetime import datetime
+
+start = time.time()
 
 full_cmd_arguments = sys.argv
 argument_list = full_cmd_arguments[1:]
@@ -409,6 +411,10 @@ try:
     shuffledns_results = subprocess.run([f'{home_dir}/go/bin/shuffledns -d {fqdn} -w {home_dir}/Wordlists/all.txt -r {home_dir}/Wordlists/resolvers.txt -o /tmp/shuffledns.tmp'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     f = open(f"/tmp/shuffledns.tmp", "r")
     shuffledns_arr = f.read().rstrip().split("\n")
+    for subdomain in shuffledns_arr:
+        if fqdn not in subdomain:
+            i = shuffledns_arr.index(subdomain)
+            del shuffledns_arr[i]
     f.close()
     subprocess.run(["rm -rf /tmp/shuffledns.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] ShuffleDNS completed successfully!")
@@ -464,4 +470,13 @@ print("[-] Updating database...")
 # Send new fqdn object
 r = requests.post(f'http://{server_ip}:{server_port}/api/auto/update', json=thisFqdn, headers={'Content-type':'application/json'})
 
-print(f"[+] Fire_Starter completed successfully!")
+end = time.time()
+runtime_seconds = math.floor(end - start)
+runtime_minutes = math.floor(runtime_seconds / 60)
+new_subdomain_length = len(consolidatedNew)
+
+message_json = {'text':f'The subdomain list for {fqdn} has been updated with {new_subdomain_length} new subdomains!  Scantime: {runtime_minutes} minutes','username':'Recon Box','icon_emoji':':eyes:'}
+# Yes, I know someone can spam this since I uploaded it to GitHub.  If you find this, instead of being a dick, how about you just say Hi?  :)
+slack_auto = requests.post('https://hooks.slack.com/services/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', json=message_json)
+
+print(f"[+] Fire_Starter completed successfully in {runtime_minutes} minutes!")
