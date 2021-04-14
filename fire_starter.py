@@ -416,6 +416,33 @@ try:
 except:
     print("[!] ShuffleDNS module did NOT complete successfully -- skipping...")
 
+try:
+    cewl_check = subprocess.run([f"cewl -h"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if shuffledns_check.returncode == 0:
+        print("[+] CeWL is already installed")
+    else :
+        print("[!] CeWL is NOT already installed -- Installing now...")
+        subprocess.run(["sudo apt-get install -y cewl"], stdout=subprocess.DEVNULL, shell=True)
+        print("[+] CeWL successfully installed!")
+    print(f"[-] Running CeWL against {fqdn} to build a custom wordlist...")
+    cewl_results = subprocess.run([f'cewl -d 2 -m 5 -o -a -w {home_dir}/Wordlists/{fqdn}_custom.txt https://{fqdn}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    wordlist = cewl_results.stdout.split("\n")
+    print("[+] Custom wordlist built successfully!")
+except:
+    print("[!] Custom wordlist module did NOT complete successfully -- skipping...")
+
+try:
+    print(f"[-] Running ShuffleDNS against {fqdn} using custom wordlist...")
+    shuffledns_results = subprocess.run([f'{home_dir}/go/bin/shuffledns -d {fqdn} -w {home_dir}/Wordlists/{fqdn}_custom.txt -r {home_dir}/Wordlists/resolvers.txt -o /tmp/shuffledns_custom.tmp'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    f = open(f"/tmp/shuffledns_custom.tmp", "r")
+    shuffledns_custom_arr = f.read().rstrip().split("\n")
+    f.close()
+    subprocess.run(["rm -rf /tmp/shuffledns_custom.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    print("[+] ShuffleDNS completed successfully!")
+    thisFqdn['recon']['subdomains']['shufflednsCustom'] = shuffledns_custom_arr
+except:
+    print("[!] ShuffleDNS module did NOT complete successfully -- skipping...")
+
 print("[+] Subdomain Bruteforcing Modules completed successfully!")
 
 print("[-] Building consolidated list...")
