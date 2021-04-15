@@ -476,7 +476,8 @@ runtime_minutes = math.floor(runtime_seconds / 60)
 new_subdomain_length = len(consolidatedNew)
 
 message_json = {'text':f'The subdomain list for {fqdn} has been updated with {new_subdomain_length} new subdomains!  Scantime: {runtime_minutes} minutes','username':'Recon Box','icon_emoji':':eyes:'}
-# Yes, I know someone can spam this since I uploaded it to GitHub.  If you find this, instead of being a dick, how about you just say Hi?  :)
-slack_auto = requests.post('https://hooks.slack.com/services/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', json=message_json)
+f = open(f'{home_dir}/.keys/slack_web_hook')
+token = f.read()
+slack_auto = requests.post(f'https://hooks.slack.com/services/{token}', json=message_json)
 
 print(f"[+] Fire_Starter completed successfully in {runtime_minutes} minutes!")
