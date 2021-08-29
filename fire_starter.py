@@ -34,7 +34,8 @@ applicable version of this script as I get closer to releasing my WAPT Framework
 
 try:
     arguments, values = getopt.getopt(argument_list, short_options, long_options)
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     sys.exit(2)
 
 hasDomain = False
@@ -105,6 +106,10 @@ else :
 
 print("[-] Starting Subdomain Scraping Modules...")
 
+# Subdomain Enumeration
+## Subdomain Scraping
+### Sublist3r
+
 try:
     sublist3r_check = subprocess.run([f"ls {home_dir}/Tools/Sublist3r"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     if sublist3r_check.returncode == 0:
@@ -123,9 +128,11 @@ try:
     subprocess.run(["rm /tmp/sublist3r.tmp"], stdout=subprocess.DEVNULL, shell=True)
     print("[+] Sublist3r completed successfully!")
     thisFqdn['recon']['subdomains']['sublist3r'] = sublist3r_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Sublist3r module did NOT complete successfully -- skipping...")
 
+### Amass
 
 try:
     amass_check = subprocess.run(["amass -h"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -146,10 +153,11 @@ try:
     f.close()
     print("[+] Amass completed successfully!")
     thisFqdn['recon']['subdomains']['amass'] = amass_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Amass module did NOT complete successfully -- skipping...")
 
-
+### Assetfinder
 
 try:
     assetfinder_check = subprocess.run([f"{home_dir}/go/bin/assetfinder -h"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -167,9 +175,11 @@ try:
     subprocess.run(["rm /tmp/assetfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] Assetfinder completed successfully!")
     thisFqdn['recon']['subdomains']['assetfinder'] = assetfinder_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Assetfinder module did NOT complete successfully -- skipping...")
 
+### GetAllUrls (GAU)
 
 try:
     gau_check = subprocess.run([f"{home_dir}/go/bin/gau -h"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -187,10 +197,11 @@ try:
     subprocess.run(["rm /tmp/gau.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] Gau completed successfully!")
     thisFqdn['recon']['subdomains']['gau'] = gau_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Gau module did NOT complete successfully -- skipping...")
 
-
+### Certificate Transparency Logs
 
 try:
     ctl_check = subprocess.run([f"ls {home_dir}/Tools/tlshelpers"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -208,9 +219,11 @@ try:
     subprocess.run(["rm /tmp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] Crt.sh completed successfully!")
     thisFqdn['recon']['subdomains']['ctl'] = ctl_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Sublist3r module did NOT complete successfully -- skipping...")
 
+### Shosubgo
 
 try:
     shosubgo_check = subprocess.run([f"ls {home_dir}/Tools/shosubgo"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -231,10 +244,11 @@ try:
     shosubgo_arr = shosubgo_results.stdout.rstrip().split("\n")
     print("[+] Shosubgo completed successfully!")
     thisFqdn['recon']['subdomains']['shosubgo'] = shosubgo_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Shosubgo module did NOT complete successfully -- skipping...")
 
-
+### Subfinder
 
 try:
     subfinder_check = subprocess.run([f"ls {home_dir}/go/bin/subfinder"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -253,10 +267,11 @@ try:
     subprocess.run(["rm -rf /tmp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] Subfinder completed successfully!")
     thisFqdn['recon']['subdomains']['subfinder'] = subfinder_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Subfinder module did NOT complete successfully -- skipping...")
 
-
+### Github-Subdomains
 
 try:
     github_search_check = subprocess.run([f"ls {home_dir}/Tools/github-search"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -284,13 +299,14 @@ try:
         print(f"[-] Iteration {i} complete!")
     print("[+] Github-Search completed successfully!")
     thisFqdn['recon']['subdomains']['githubSearch'] = github_search_iteration_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Github-Search module did NOT complete successfully -- skipping...")
 
 print("[+] Subdomain Scraping Modules Completed!")
-
-
 print("[-] Starting Link / JS Discovery Modules...")
+
+### GoSpider
 
 try:
     gospider_check = subprocess.run([f"ls {home_dir}/go/bin/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -317,10 +333,11 @@ try:
     subprocess.run(["rm -rf /tmp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] Gospider completed successfully!")
     thisFqdn['recon']['subdomains']['gospider'] = gospider_link_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Gospider module did NOT complete successfully -- skipping...")
 
-
+### Hakrawler
 
 try:
     hakrawler = subprocess.run([f"ls {home_dir}/go/bin/hakrawler"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -331,7 +348,7 @@ try:
         cloning = subprocess.run(["go get github.com/hakluke/hakrawler"], stdout=subprocess.DEVNULL, shell=True)
         print("[+] Hakrawler successfully installed!")
     print(f"[-] Running Hakrawler against {fqdn}...")
-    hakrawler_results = subprocess.run([f'cd {home_dir}/go/bin; cat /tmp/amass.tmp | ./hakrawler --nocolor > /tmp/hakrawler.tmp'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    hakrawler_results = subprocess.run([f'cd {home_dir}/go/bin; cat /tmp/amass.tmp | ./hakrawler -subs -d 3 -u > /tmp/hakrawler.tmp'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     f = open(f"/tmp/hakrawler.tmp", "r")
     hakrawler_arr = f.read().rstrip().split("\n")
     hakrawler_link_arr = []
@@ -346,10 +363,11 @@ try:
     subprocess.run(["rm -rf /tmp/hakrawler"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] Hakwraler completed successfully!")
     thisFqdn['recon']['subdomains']['hakrawler'] = hakrawler_link_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Hakrawler module did NOT complete successfully -- skipping...")
 
-
+### SubDomainizer
 
 try:
     subdomainizer_check = subprocess.run([f"ls {home_dir}/Tools/SubDomainizer"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -369,13 +387,11 @@ try:
     subprocess.run(["rm /tmp/subdomainizer.tmp"], stdout=subprocess.DEVNULL, shell=True)
     print("[+] SubDomainizer completed successfully!")
     thisFqdn['recon']['subdomains']['subdomainizer'] = subdomainizer_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] SubDomainizer module did NOT complete successfully -- skipping...")
 
-
 print("[+] Link / JS Discovery Modules Completed!")
-
-
 print("[-] Starting Subdomain Bruteforcing Modules...")
 
 directory_check = subprocess.run([f"ls {home_dir}/Wordlists"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -403,6 +419,7 @@ else:
     cloning = subprocess.run([f"cd {home_dir}/Wordlists; wget https://raw.githubusercontent.com/janmasarik/resolvers/master/resolvers.txt"], stdout=subprocess.DEVNULL, shell=True)
     print("[+] Resolvers.txt wordlist downloaded successfully!")
 
+### ShuffleDNS
 
 try:
     shuffledns_check = subprocess.run([f"ls {home_dir}/go/bin/shuffledns"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -424,8 +441,11 @@ try:
     subprocess.run(["rm -rf /tmp/shuffledns.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] ShuffleDNS completed successfully!")
     thisFqdn['recon']['subdomains']['shuffledns'] = shuffledns_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] ShuffleDNS module did NOT complete successfully -- skipping...")
+
+### Build Custom Wordlist
 
 try:
     cewl_check = subprocess.run([f"cewl -h"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -439,8 +459,11 @@ try:
     cewl_results = subprocess.run([f'cewl -d 2 -m 5 -o -a -w {home_dir}/Wordlists/{fqdn}_custom.txt https://{fqdn}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     wordlist = cewl_results.stdout.split("\n")
     print("[+] Custom wordlist built successfully!")
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] Custom wordlist module did NOT complete successfully -- skipping...")
+
+### ShuffleDNS Custom
 
 try:
     print(f"[-] Running ShuffleDNS against {fqdn} using custom wordlist...")
@@ -451,14 +474,16 @@ try:
     subprocess.run(["rm -rf /tmp/shuffledns_custom.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     print("[+] ShuffleDNS completed successfully!")
     thisFqdn['recon']['subdomains']['shufflednsCustom'] = shuffledns_custom_arr
-except:
+except Exception as e:
+    print(f'[!] Exception: {e}')
     print("[!] ShuffleDNS module did NOT complete successfully -- skipping...")
 
 print("[+] Subdomain Bruteforcing Modules completed successfully!")
 
 print("[-] Building consolidated list...")
 
-# Build Consolidated List
+# Final Analysis
+## Build Consolidated List
 
 consolidated = thisFqdn['recon']['subdomains']['consolidated']
 consolidatedNew = []
